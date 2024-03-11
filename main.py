@@ -7,11 +7,11 @@ app = FastAPI()
 
 # Se cargan los dataframes
 # Games
-games = pd.read_json("../Data/corregida/r_games.json.gzip",compression="gzip",convert_dates=['release_date'],date_unit="ms")
+games = pd.read_json("./Data/corregida/r_games.json.gzip",compression="gzip",convert_dates=['release_date'],date_unit="ms")
 # Reviews
-reviews = pd.read_json("../Data/corregida/r_reviews.json.gzip",compression="gzip",convert_dates=["posted"],date_unit="ms")
+reviews = pd.read_json("./Data/corregida/r_reviews.json.gzip",compression="gzip",convert_dates=["posted"],date_unit="ms")
 # Items
-items = pd.read_parquet("../Data/corregida/items.parquet.gzip")
+items = pd.read_parquet("./Data/corregida/items.parquet.gzip")
 
 # Se define la función PlayTimeGenre
 @app.get("/PlayTimeGenre")
