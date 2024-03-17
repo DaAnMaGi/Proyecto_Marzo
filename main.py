@@ -14,7 +14,7 @@ reviews = pd.read_parquet("./Data/final/reviews_final.parquet")
 # Items
 items = pd.read_parquet("./Data/final/items_final.parquet")
 # Modelo
-modelo = dump.load("../Data/modelo/modelo_entrenado.pkl")[1]
+modelo = dump.load("./Data/modelo/modelo_entrenado.pkl")[1]
 
 # Se define la función PlayTimeGenre
 @app.get("/PlayTimeGenre")
@@ -146,15 +146,20 @@ def sentiment_analysis(año:int):
     except Exception:
         return {"No existen datos para el año referenciado"}
 
+# Se crea la función "recomendacion_usuario" para obtener las recomendaciones.
 @app.get("/recomendacion_usuario")    
 def recomendacion_usuario(user_id:str):
     try:
+        # Se instancia el modelo a utilizar
         model = modelo
-        # Se obtienen todos los ítems que el usuario no ha calificado.
-        items_unrated = [item for item in entrenamiento.all_items() if item not in entrenamiento.ur[user_id]]
+        
+        # Se obtienen todos los ID de juegos del usuario que no ha etiquetado todavía.
+        r = set(reviews[reviews["user_id"] == user_id]["item_id"])
+        todos_games = set(reviews["item_id"].unique())
+        sin = todos_games - r
 
-        # Se hacen predicciones para los ítems no calificados por el usuario.
-        predictions = [model.predict(user_id, item) for item in items_unrated]
+        # Se hacen predicciones para cada uno de los juegos no calificados por el usuario.
+        predictions = [model.predict(user_id, item) for item in sin]
 
         # Se ordenan las predicciones en orden descendente de calificación
         predictions.sort(key=lambda x: x.est, reverse=True)
