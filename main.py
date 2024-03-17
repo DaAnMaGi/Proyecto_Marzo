@@ -35,7 +35,7 @@ def PlayTimeGenre(genero:str):
         año = s.idxmax()
         
         # Se genera la respuesta.
-        respuesta = {f"Año de lanzamiento con más horas jugadas para el género {genero}":año}
+        respuesta = {f"Año de lanzamiento con más horas jugadas para el género {genero}":int(año)}
 
         return respuesta
     # Se crea una excepción para los casos en donde el género señalado no esté en la base de datos.
@@ -136,10 +136,9 @@ def sentiment_analysis(año:int):
         r = r.groupby("sentiment_analysis")["user_id"].count()
         # Se estructura la respuesta
         respuesta = {
-        "Negative":r[0],
-        "Neutral":r[1],
-        "Positive":r[2]
-        }
+        "Negative":int(r[0]),
+        "Neutral":int(r[1]),
+        "Positive":int(r[2])}
 
         return respuesta
     # Se crea una excepción para los casos en donde el año señalado no esté en la base de datos.
@@ -172,12 +171,12 @@ def recomendacion_usuario(user_id:str):
 
         # Se instancia la respuesta, devolviendo el ID y el nombre del juego para cada una de las recomendaciones.
         resultado = {
-        "item 1":{"id_item":ids_items[0],"game name":games.loc[games["id"] == ids_items[0],"app_name"].iloc[0]},
-        "item 2":{"id_item":ids_items[1],"game name":games.loc[games["id"] == ids_items[1],"app_name"].iloc[0]},
-        "item 3":{"id_item":ids_items[2],"game name":games.loc[games["id"] == ids_items[2],"app_name"].iloc[0]},
-        "item 4":{"id_item":ids_items[3],"game name":games.loc[games["id"] == ids_items[3],"app_name"].iloc[0]},
-        "item 5":{"id_item":ids_items[4],"game name":games.loc[games["id"] == ids_items[4],"app_name"].iloc[0]},
-        }
+        "item 1":{"id_item":int(ids_items[0]),"game name":str(games.loc[games["id"] == ids_items[0],"app_name"].iloc[0])},
+        "item 2":{"id_item":int(ids_items[1]),"game name":str(games.loc[games["id"] == ids_items[1],"app_name"].iloc[0])},
+        "item 3":{"id_item":int(ids_items[2]),"game name":str(games.loc[games["id"] == ids_items[2],"app_name"].iloc[0])},
+        "item 4":{"id_item":int(ids_items[3]),"game name":str(games.loc[games["id"] == ids_items[3],"app_name"].iloc[0])},
+        "item 5":{"id_item":int(ids_items[4]),"game name":str(games.loc[games["id"] == ids_items[4],"app_name"].iloc[0])}}
+        
         return resultado
     # Se crea una excepción para los casos en donde no se encuentre al id del usuario en la base de datos.
     except Exception:
