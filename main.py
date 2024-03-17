@@ -1,6 +1,7 @@
 # Se importan las librerías necesarias
 from fastapi import FastAPI
 import pandas as pd
+from surprise import dump
 
 # Se crea la app.
 app = FastAPI()
@@ -12,6 +13,8 @@ games = pd.read_parquet("./Data/final/games_final.parquet")
 reviews = pd.read_parquet("./Data/final/reviews_final.parquet")
 # Items
 items = pd.read_parquet("./Data/final/items_final.parquet")
+# Modelo
+modelo = dump.load("../Data/modelo/modelo_entrenado.pkl")[1]
 
 # Se define la función PlayTimeGenre
 @app.get("/PlayTimeGenre")
@@ -142,3 +145,35 @@ def sentiment_analysis(año:int):
     # Se crea una excepción para los casos en donde el año señalado no esté en la base de datos.
     except Exception:
         return {"No existen datos para el año referenciado"}
+
+@app.get("/recomendacion_usuario")    
+def recomendacion_usuario(user_id:str):
+    try:
+        model = modelo
+        # Se obtienen todos los ítems que el usuario no ha calificado.
+        items_unrated = [item for item in entrenamiento.all_items() if item not in entrenamiento.ur[user_id]]
+
+        # Se hacen predicciones para los ítems no calificados por el usuario.
+        predictions = [model.predict(user_id, item) for item in items_unrated]
+
+        # Se ordenan las predicciones en orden descendente de calificación
+        predictions.sort(key=lambda x: x.est, reverse=True)
+
+        # Se obtienen las mejores 5 recomendaciones
+        top_n = predictions[:5]
+
+        # Se obtienen los ID de los juegos para cada una de las recomendaciones.
+        ids_items = [prediccion.iid for prediccion in top_n]
+
+        # Se instancia la respuesta, devolviendo el ID y el nombre del juego para cada una de las recomendaciones.
+        resultado = {
+        "item 1":{"id_item":ids_items[0],"game name":games.loc[games["id"] == ids_items[0],"app_name"].iloc[0]},
+        "item 2":{"id_item":ids_items[1],"game name":games.loc[games["id"] == ids_items[1],"app_name"].iloc[0]},
+        "item 3":{"id_item":ids_items[2],"game name":games.loc[games["id"] == ids_items[2],"app_name"].iloc[0]},
+        "item 4":{"id_item":ids_items[3],"game name":games.loc[games["id"] == ids_items[3],"app_name"].iloc[0]},
+        "item 5":{"id_item":ids_items[4],"game name":games.loc[games["id"] == ids_items[4],"app_name"].iloc[0]},
+        }
+        return resultado
+    # Se crea una excepción para los casos en donde no se encuentre al id del usuario en la base de datos.
+    except Exception:
+        return {"No se encontraron datos para el usuario especificado"}
