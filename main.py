@@ -1,10 +1,11 @@
 # Se importan las librerías necesarias
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 import pandas as pd
 from surprise import dump
 
 # Se crea la app.
-app = FastAPI()
+app = FastAPI(title="Proyecto Individual 1 - David Marimón")
 
 # Se cargan los dataframes
 # Games
@@ -15,6 +16,10 @@ reviews = pd.read_parquet("./Data/final/reviews_final.parquet")
 items = pd.read_parquet("./Data/final/items_final.parquet")
 # Modelo
 modelo = dump.load("./Data/modelo/modelo_entrenado.pkl")[1]
+
+@app.get("/",include_in_schema=False)
+def index():
+    return RedirectResponse("/docs",status_code=308)
 
 # Se define la función PlayTimeGenre
 @app.get("/PlayTimeGenre")
