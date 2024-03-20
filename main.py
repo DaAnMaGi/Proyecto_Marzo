@@ -17,6 +17,7 @@ items = pd.read_parquet("./Data/final/items_final.parquet")
 # Modelo
 modelo = dump.load("./Data/modelo/modelo_entrenado.pkl")[1]
 
+# Se define una ruta para que al abrir la API redirija a la documentación y facilite la revisión de las demás rutas/consultas.
 @app.get("/",include_in_schema=False)
 def index():
     return RedirectResponse("/docs",status_code=308)
