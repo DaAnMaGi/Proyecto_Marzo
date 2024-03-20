@@ -135,9 +135,11 @@ def UsersNotRecommend(año:int):
 @app.get("/sentiment_analysis")
 def sentiment_analysis(año:int):
     try:
-        # Se obtienen todas las reseñas para el año especificado:
-        r = reviews[reviews["posted"].dt.year == año]
-        # Se obtienen el número de comentario por cada categoria
+        # Se obtienen todas los juegos para el año especificado.
+        g = list(games[games["release_date"].dt.year == año]["id"].unique())
+        # Se obtienen las reseñas de los juegos identificados:
+        r = reviews[reviews["item_id"].isin(g)]
+        # Se obtienen el número de comentarios/registros por cada categoria.
         r = r.groupby("sentiment_analysis")["user_id"].count()
         # Se estructura la respuesta
         respuesta = {
